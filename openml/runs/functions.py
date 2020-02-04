@@ -1,5 +1,6 @@
 # License: BSD 3-Clause
 
+from time import time
 from collections import OrderedDict
 import io
 import itertools
@@ -105,8 +106,11 @@ def run_model_on_task(
         else:
             return task
 
+    print('before get_task {}'.format(time()))
     task = get_task_and_type_conversion(task)
+    print('after get_task {}'.format(time()))
 
+    print('before run_flow_on_task {}'.format(time()))
     run = run_flow_on_task(
         task=task,
         flow=flow,
@@ -116,6 +120,7 @@ def run_model_on_task(
         add_local_measures=add_local_measures,
         upload_flow=upload_flow,
     )
+    print('after run_flow_on_task {}'.format(time()))
     if return_flow:
         return run, flow
     return run
@@ -219,12 +224,15 @@ def run_flow_on_task(
             flow_id = None
             pass
 
+    print('before get_dataset {}'.format(time()))
     dataset = task.get_dataset()
+    print('after get_dataset {}'.format(time()))
 
     run_environment = flow.extension.get_version_information()
     tags = ['openml-python', run_environment[1]]
 
     # execute the run
+    print('before run_task_get_arffcontent {}'.format(time()))
     res = _run_task_get_arffcontent(
         flow=flow,
         model=flow.model,
@@ -232,6 +240,7 @@ def run_flow_on_task(
         extension=flow.extension,
         add_local_measures=add_local_measures,
     )
+    print('after run_task_get_arffcontent {}'.format(time()))
 
     data_content, trace, fold_evaluations, sample_evaluations = res
 
